@@ -24,7 +24,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
   const user = await User.create({
     name: req.body.name,
     email: req.body.email,
-    birthdate: req.body.birthdate,
+    phone: req.body.phone,
     password: req.body.password,
   });
 

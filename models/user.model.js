@@ -8,9 +8,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: [true, "name required"],
     },
-    birthdate: {
-      type: Date,
-    },
     image: String,
     email: {
       type: String,
@@ -41,10 +38,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "mentor", "admin", "manager"],
       default: "user",
-    },
-    active: {
-      type: Boolean,
-      default: false,
     },
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     consultaions: [
