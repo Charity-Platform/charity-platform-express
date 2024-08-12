@@ -31,7 +31,11 @@ if (process.env.NODE_ENV === "development") {
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "*"],
+    origin: [
+      "http://localhost:5173",
+      "https://charity-platform-frontend.onrender.com",
+      "*",
+    ],
   })
 );
 
