@@ -39,7 +39,7 @@ router.post("/verify-email", verifyEmail);
 router.post("/resend-code", resendVerificationCode);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-reset-code", verifyPassResetCode);
-router.put("/reset-password", resetePasswordValidator, resetPassword);
+router.put("/reset-password", resetPassword);
 router.post("/logout", protect, logout);
 
 module.exports = router;
