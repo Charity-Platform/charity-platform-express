@@ -13,7 +13,12 @@ const {
 const { allowedTo, protect } = require("../services/auth.service");
 
 // Create a new question
-router.post("/", protect, allowedTo("manager", "admin"), createQuestion);
+router.post(
+  "/",
+  protect,
+  // allowedTo("manager", "admin"),
+  createQuestion
+);
 
 // Get all questions
 router.get("/", getAllQuestions);
@@ -22,9 +27,19 @@ router.get("/", getAllQuestions);
 router.get("/:id", getQuestionById);
 
 // Update question by id
-router.put("/:id", protect, allowedTo("manager", "admin"), updateQuestion);
+router.put(
+  "/:id",
+  protect,
+  // allowedTo("manager", "admin"),
+  updateQuestion
+);
 
 // Delete question by id
-router.delete("/:id", protect, allowedTo("manager", "admin"), deleteQuestion);
+router.delete(
+  "/:id",
+  protect,
+  // allowedTo("manager", "admin"),
+  deleteQuestion
+);
 
 module.exports = router;

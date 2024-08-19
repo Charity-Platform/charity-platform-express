@@ -11,7 +11,7 @@ exports.getQuestionById = factory.getOne(Question);
 
 exports.getAllQuestions = asyncHandler(async (req, res, next) => {
   const document = await Question.find().select(
-    "title image description price  answer "
+    "title image description price question answer "
   );
   if (!document) next(new ApiError(`Error Happend `, 404));
   if (document.length === 0) {

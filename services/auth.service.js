@@ -494,7 +494,6 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
     passwordResetCode: hashedResetCode,
     passwordResetExpires: { $gt: Date.now() },
   });
-  console.log(user);
   if (!user) {
     // If not, check if it belongs to a mentor
     user = await Mentor.findOne({
@@ -525,6 +524,7 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     status: "Success",
+    token,
   });
 });
 
