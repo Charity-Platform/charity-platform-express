@@ -14,6 +14,7 @@ const authRoutes = require("./routes/auth.routes");
 const FieldRoutes = require("./routes/field.routes");
 const contactUsRoutes = require("./routes/contactUs.routes");
 const questionRoutes = require("./routes/question.routes.js");
+const userRoutes = require("./routes/user.routes.js");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -44,6 +45,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/fields", FieldRoutes);
 app.use("/api/contact-us", contactUsRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
