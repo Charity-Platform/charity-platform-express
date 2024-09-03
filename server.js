@@ -15,6 +15,10 @@ const FieldRoutes = require("./routes/field.routes");
 const contactUsRoutes = require("./routes/contactUs.routes");
 const questionRoutes = require("./routes/question.routes.js");
 const userRoutes = require("./routes/user.routes.js");
+const bookRoutes = require("./routes/book.routes.js");
+const videosRoutes = require("./routes/video.routes.js");
+const consTicketRoutes = require("./routes/cons.tickets.routes.js");
+const coursesRoutes = require("./routes/courses.routes.js");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -46,6 +50,11 @@ app.use("/api/fields", FieldRoutes);
 app.use("/api/contact-us", contactUsRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/books", bookRoutes);
+app.use("/api/courses", coursesRoutes);
+app.use("/api/videos", videosRoutes);
+app.use("/api/cons-tickets", consTicketRoutes);
+
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
