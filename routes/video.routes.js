@@ -5,20 +5,19 @@ const { saveSingleImage } = require("../middlewares/imageProcessing");
 const { checkVideoOwner } = require("../middlewares/check.video.owner");
 const {
   createVideo,
-  getAllVideos,
   updateVideo,
   deleteVideo,
   getVideoById,
   uploadVideoImage,
 } = require("../services/video.service");
 const { allowedTo, protect } = require("../services/auth.service");
-const { checCoursekOwner } = require("../middlewares/check.course-owner");
+const { checCoursesOwner } = require("../middlewares/check.course-owner");
 
 router.use(protect);
 // Route to create a new Video
 router.post(
   "/",
-  checCoursekOwner,
+  checCoursesOwner,
   uploadVideoImage,
   saveSingleImage,
   createVideo
@@ -28,10 +27,14 @@ router.post(
 router.get("/:id", getVideoById);
 
 // Route to update a Video
-router.put("/:id", allowedTo("mentor", "manager"), updateVideo);
+router.put("/:id", 
+  // allowedTo("mentor", "manager"), 
+  updateVideo);
 
 // Route to delete a Video
-router.delete("/:id", allowedTo("mentor", "manager"), deleteVideo);
+router.delete("/:id", 
+  // allowedTo("mentor", "manager"),
+   deleteVideo);
 
 // Export the router
 module.exports = router;

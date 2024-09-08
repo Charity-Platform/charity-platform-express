@@ -68,7 +68,6 @@ exports.createCourse = async (req, res) => {
     const { body, user } = req;
     const newCourse = new Course(body);
     newCourse.owner = user.id;
-    newCourse.field = user.field;
     await newCourse.save();
     await Mentor.findByIdAndUpdate(
       user.id,

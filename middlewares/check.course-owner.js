@@ -3,7 +3,7 @@ const ApiError = require("../utils/api.error");
 const Course = require("../models/course.model");
 // const Mentor = require("../models/Mentor.model");
 
-exports.checCoursekOwner = asyncHandler(async (req, res, next) => {
+exports.checCoursesOwner = asyncHandler(async (req, res, next) => {
   let courseID = {};
   if (req.body.course) {
     courseID = req.body.course;

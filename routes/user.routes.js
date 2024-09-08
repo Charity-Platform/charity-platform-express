@@ -19,6 +19,6 @@ router.get("/me", getLoggedUserData);
 router.put("/updateMe",uploadProfileImage,
 saveSingleImage, updateLoggedUserData);
 router.put("/update-password", updateLoggedUserPassword);
-router.put("/update-role", updateUserRole);
+router.put("/update-role/:id", updateUserRole);
 
 module.exports = router;

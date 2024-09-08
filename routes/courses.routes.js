@@ -20,7 +20,7 @@ const {
 } = require("../services/courses.service");
 const { saveSingleImage } = require("../middlewares/imageProcessing");
 const { protect, allowedTo } = require("../services/auth.service");
-const { checCoursekOwner } = require("../middlewares/check.course-owner");
+const { checCoursesOwner } = require("../middlewares/check.course-owner");
 
 router.get("/", getAllCourses);
 
@@ -53,7 +53,7 @@ router.delete("/request/:id", protect, deleteCourseRequest);
 
 router.get("/:id", protect, checksubscribed, getCourseById);
 
-router.put("/:id", protect, checCoursekOwner, uploadCourseImage, updateCourse);
+router.put("/:id", protect, checCoursesOwner, uploadCourseImage, updateCourse);
 
 router.delete("/:id", protect,
   //  allowedTo("mentor", "manager"),

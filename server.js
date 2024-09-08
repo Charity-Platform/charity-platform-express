@@ -19,6 +19,7 @@ const bookRoutes = require("./routes/book.routes.js");
 const videosRoutes = require("./routes/video.routes.js");
 const consTicketRoutes = require("./routes/cons.tickets.routes.js");
 const coursesRoutes = require("./routes/courses.routes.js");
+const mentorRoutes = require("./routes/mentor.routes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -54,7 +55,7 @@ app.use("/api/books", bookRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
 app.use("/api/cons-tickets", consTicketRoutes);
-
+app.use("/api/mentors", mentorRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
