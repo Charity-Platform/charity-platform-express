@@ -40,6 +40,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://charity-platform-frontend.onrender.com",
+      "https://charity-platform-frontend.vercel.app",
       "*",
     ],
   })
