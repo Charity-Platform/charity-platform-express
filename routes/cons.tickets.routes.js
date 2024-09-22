@@ -25,7 +25,12 @@ const { allowedTo, protect } = require("../services/auth.service");
 const { checkTicketOwner } = require("../middlewares/check.ticket.owner");
 
 // Create ticket
-router.post("/", protect, allowedTo("mentor", "manager"), createTicket);
+router.post(
+  "/",
+  protect,
+  allowedTo("mentor", "admin", "manager"),
+  createTicket
+);
 
 // Get all tickets for field
 router.get("/field", getAllTicketsForField);
