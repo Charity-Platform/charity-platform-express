@@ -16,7 +16,11 @@ exports.saveSingleImage = asyncHandler(async (req, res, next) => {
 
     await uploadToS3(req.file.buffer, imageName, "images");
 
-    req.body.image = imageName;
+    // Create the full URL
+    const imageUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/images/${imageName}`;
+
+    // Save the full path to req.body.image
+    req.body.image = imageUrl;
   }
 
   next();

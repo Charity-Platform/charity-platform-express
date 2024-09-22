@@ -56,6 +56,7 @@ exports.updateOne = (Model) =>
 exports.getOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
+    console.log(document);
     if (!document)
       return next(
         new ApiError(
@@ -69,7 +70,7 @@ exports.getOne = (Model) =>
 exports.getAll = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.find().select(
-      "title image description price body answer field link"
+      "title image description price body videos answer courseLink field link"
     );
     if (!document) next(new ApiError(`Error Happend `, 404));
     if (document.length === 0) {

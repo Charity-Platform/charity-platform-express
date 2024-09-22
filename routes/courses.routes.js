@@ -51,7 +51,9 @@ router.get("/request/:id", protect, getCourseRequestById);
 
 router.delete("/request/:id", protect, deleteCourseRequest);
 
-router.get("/:id", protect, checksubscribed, getCourseById);
+router.get("/:id",
+  //  protect, checksubscribed,
+   getCourseById);
 
 router.put("/:id", protect, checCoursesOwner, uploadCourseImage, updateCourse);
 

@@ -13,11 +13,11 @@ const {
 const { allowedTo, protect } = require("../services/auth.service");
 const { checCoursesOwner } = require("../middlewares/check.course-owner");
 
-router.use(protect);
+// router.use(protect);
 // Route to create a new Video
 router.post(
   "/",
-  checCoursesOwner,
+  // checCoursesOwner,
   uploadVideoImage,
   saveSingleImage,
   createVideo

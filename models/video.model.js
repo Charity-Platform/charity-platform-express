@@ -5,11 +5,9 @@ const videoSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, "the video title is required"],
     },
     url: {
       type: String,
-      required: [true, "the video url is required"],
     },
     course: {
       type: Schema.Types.ObjectId,
