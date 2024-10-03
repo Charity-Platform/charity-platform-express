@@ -55,7 +55,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/videos", videosRoutes);
-app.use("/api/cons-tickets", consTicketRoutes);
+app.use("/api/tickets", consTicketRoutes);
 app.use("/api/mentors", mentorRoutes);
 
 app.get("*", (req, res) => {

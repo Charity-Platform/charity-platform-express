@@ -32,7 +32,14 @@ router.post(
 
 router.get("/:id", protect, checksubscribed, getBookById);
 
-router.patch("/:id", protect, checkBookOwner, updateBook);
+router.put(
+  "/:id",
+  protect,
+  checkBookOwner,
+  uploadBookImgsAndFile,
+  saveFilesNameToDB,
+  updateBook
+);
 
 router.delete("/:id", protect, checkBookOwner, deleteBook);
 
