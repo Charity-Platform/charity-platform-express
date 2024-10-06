@@ -12,7 +12,7 @@ exports.uploadSingleImage = (field) => upload.single(field);
 const s3Client = new S3Client({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+    secretAccessKey: process.env.AWS_SECRETE_KEY,
   },
   region: process.env.AWS_REGION,
 });
