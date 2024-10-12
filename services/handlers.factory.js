@@ -70,7 +70,7 @@ exports.getOne = (Model) =>
 exports.getAll = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.find().select(
-      "title image description price body videos answer courseLink field link"
+      "title image description price body videos answer content auther courseLink field link"
     );
     if (!document) next(new ApiError(`Error Happend `, 404));
     if (document.length === 0) {

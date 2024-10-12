@@ -56,6 +56,17 @@ exports.getAllBooks = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.getAllBooksForMentor = asyncHandler(async (req, res, next) => {
+  const books = await Book.find({
+    owner: req.params.mentorID,
+  });
+  if (!books) {
+    return next(
+      new ApiError(
+        `The books for this mentor ${req.params.mentor} were not found`
+      )
+    );
+  }
+  res.status(200).json({ length: books.length, data: books });
+});
 exports.checksubscribed = subscribed(Book);
-
-
