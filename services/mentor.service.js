@@ -40,7 +40,7 @@ exports.getMentorById = asyncHandler(async (req, res, next) => {
 
 exports.getAllActiveMentors = asyncHandler(async (req, res, next) => {
   const mentors = await Mentor.find({ accepted: true }).select(
-    "name phone email field  accepted image courses"
+    "name phone email field  accepted image courses address"
   );
 
   if (mentors.length === 0) {
@@ -82,15 +82,13 @@ exports.getMentorsByField = async (req, res, next) => {
     const mentors = await Mentor.find(filterObject).select(
       "name phone email field image"
     );
-    
+
     res.status(200).json({ mentors });
   } catch (error) {
     console.error("Error retrieving mentors by field:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 
 // ---------- DEPSITES -----------------//
 exports.depositeRequest = asyncHandler(async (req, res, next) => {
