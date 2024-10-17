@@ -11,6 +11,8 @@ const {
   uploadBookImgsAndFile,
   createBook,
   getAllBooksForMentor,
+  getAllFreeBooks,
+  getAllPaidBooks,
 } = require("../services/book.service");
 const { checksubscribed } = require("../services/book.service");
 const { checkBookOwner } = require("../middlewares/check.book-owner");
@@ -21,6 +23,8 @@ const { saveFilesNameToDB } = require("../middlewares/imagesAndFilesProcess");
 // router.post("/payment/checkout/:id", protect, bookPaymentCheckout);
 
 router.get("/", getAllBooks);
+router.get("/free", getAllFreeBooks);
+router.get("/paid", getAllPaidBooks);
 router.get("/mentor/:mentorID", getAllBooksForMentor);
 
 router.post(

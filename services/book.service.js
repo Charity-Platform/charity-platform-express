@@ -37,6 +37,34 @@ exports.deleteBook = factory.deleteOne(Book);
 
 exports.getBookById = factory.getOne(Book);
 
+exports.getAllFreeBooks = asyncHandler(async (req, res, next) => {
+  const document = await Book.find({ isFree: true });
+  if (!document) next(new ApiError(`Error Happend `, 404));
+  if (document.length === 0) {
+    res.status(200).json({ message: "There Is NO Data To Retrive" });
+  } else {
+    res.status(200).json({
+      message: "Documents retrieved successfully",
+      length: document.length,
+      document,
+    });
+  }
+});
+
+exports.getAllPaidBooks = asyncHandler(async (req, res, next) => {
+  const document = await Book.find({ isFree: false });
+  if (!document) next(new ApiError(`Error Happend `, 404));
+  if (document.length === 0) {
+    res.status(200).json({ message: "There Is NO Data To Retrive" });
+  } else {
+    res.status(200).json({
+      message: "Documents retrieved successfully",
+      length: document.length,
+      document,
+    });
+  }
+});
+
 exports.getAllBooks = asyncHandler(async (req, res, next) => {
   const document = await Book.find()
     .select("title image description price owner ")

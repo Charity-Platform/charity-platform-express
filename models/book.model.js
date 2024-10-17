@@ -27,6 +27,11 @@ const bookSchema = new mongoose.Schema(
     },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
     paidUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isFree: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
   },
   { timestamps: true }
 );
