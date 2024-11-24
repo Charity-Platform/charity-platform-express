@@ -98,3 +98,50 @@ exports.getAllBooksForMentor = asyncHandler(async (req, res, next) => {
   res.status(200).json({ length: books.length, data: books });
 });
 exports.checksubscribed = subscribed(Book);
+
+exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
+  // Retrieve document based on ID from the Book model
+  const document = await Book.findOne({ _id: req.params.id });
+
+  // Check if the document exists, if not, send a 404 error
+  if (!document) {
+    return next(
+      new ApiError(`The document for this id ${req.params.id} not found`, 404)
+    );
+  }
+
+  // Check if the user has already paid for this document when using online payment
+  const paidUsersDocument = await Book.findOne({ _id: req.params.id }).select(
+    "paidUsers"
+  );
+  if (
+    paidUsersDocument &&
+    paidUsersDocument.paidUsers &&
+    paidUsersDocument.paidUsers
+      .map((user) => user.toString())
+      .includes(req.user.id)
+  ) {
+    return next(new ApiError(`You already own this item`, 401));
+  }
+
+  // Prepare payment data for postPaymentData function
+  const data = {
+    merchantCode: `${process.env.merchantCode}`,
+    amount: document.price,
+    paymentType: "0",
+    responseUrl: `${process.env.responseUrl}/auth/request/payment/book`,
+    failureUrl: `${process.env.failureUrl}/auth/request/payment/book`,
+    version: "2",
+    orderReferenceNumber: req.params.id,
+    currency: "KWD",
+    variable3: req.user.id + Date.now(),
+    name: req.user.name,
+    email: req.user.email,
+    mobile_number: req.user.phone,
+    saveCard: true,
+  };
+
+  // Call the postPaymentData function and send the response to the client
+  const response = await postPaymentData(data);
+  res.status(200).json({ status: "success", data: response });
+});
