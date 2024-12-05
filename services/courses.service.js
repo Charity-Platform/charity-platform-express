@@ -6,7 +6,6 @@ const Mentor = require("../models/mentor.model");
 const factory = require("./handlers.factory");
 const CourseRequest = require("../models/courses.payment.records");
 const { subscribed } = require("../middlewares/check.subscription");
-const { generateKey } = require("crypto");
 exports.uploadCourseImage = uploadSingleImage("image");
 
 exports.getCourseRequestById = async (req, res, next) => {

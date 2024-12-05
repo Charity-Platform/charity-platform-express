@@ -22,6 +22,7 @@ const coursesRoutes = require("./routes/courses.routes.js");
 const mentorRoutes = require("./routes/mentor.routes");
 const postsRoutes = require("./routes/post.routes");
 const jobsRoutes = require("./routes/job.routes");
+const employeeRoutes = require("./routes/employee.routes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -61,6 +62,7 @@ app.use("/api/tickets", consTicketRoutes);
 app.use("/api/mentors", mentorRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/jobs", jobsRoutes);
+app.use("/api/employee", employeeRoutes);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
