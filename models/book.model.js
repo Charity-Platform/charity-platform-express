@@ -14,6 +14,9 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: [true, "pdf is required"],
     },
+    review: {
+      type: String,
+    },
     description: {
       type: String,
       required: [true, "description is required"],

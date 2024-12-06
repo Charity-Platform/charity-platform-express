@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/api.error");
 const EmployeeRequest = require("../models/employee.model");
 const { uploadMixOfImages } = require("../middlewares/imagesAndFilesProcess");
+const path = require("path");
 
 exports.uploadProfileImageAndPdf = uploadMixOfImages([
   {
@@ -17,7 +18,9 @@ exports.uploadProfileImageAndPdf = uploadMixOfImages([
 exports.createEmployeeRequest = factory.createOne(EmployeeRequest);
 
 exports.getEmployeeRequests = asyncHandler(async (req, res, next) => {
-  const document = await EmployeeRequest.find().select("name image department");
+  const document = await EmployeeRequest.find().select(
+    "name image department phone description"
+  );
   if (!document) next(new ApiError(`Error Happend `, 404));
   if (document.length === 0) {
     res.status(200).json({ message: "There Is NO Data To Retrive" });

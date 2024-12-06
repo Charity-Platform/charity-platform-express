@@ -1373,6 +1373,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aes-js@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "aes-js@npm:3.1.2"
+  checksum: 10c0/2568cc67af66fd9d41de25dc73d49ae810269c7648bbb1928b9f84d8fd6ddb4e39ed506d1be6794f5ffd567aadea75fc6895ef34d2b70b764f539f72a6a2baeb
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:^7.0.2, agent-base@npm:^7.1.0, agent-base@npm:^7.1.1":
   version: 7.1.1
   resolution: "agent-base@npm:7.1.1"
@@ -1625,6 +1632,7 @@ __metadata:
   resolution: "charity-backend@workspace:."
   dependencies:
     "@aws-sdk/client-s3": "npm:^3.623.0"
+    aes-js: "npm:^3.1.2"
     axios: "npm:^1.7.7"
     bcryptjs: "npm:^2.4.3"
     cookie-parser: "npm:^1.4.6"

@@ -1,10 +1,12 @@
 const aesjs = require("aes-js");
 const axios = require("axios");
 const HesabeCrypt = require("./HesabeCrypt");
+const dotenv = require("dotenv").config();
 
 const { secretKey, ivKey, accessCode } = process.env;
 
 const getEncryptedData = (data) => {
+  console.log(secretKey, ivKey, accessCode);
   if (data) {
     const key = aesjs.utils.utf8.toBytes(secretKey);
     const iv = aesjs.utils.utf8.toBytes(ivKey);

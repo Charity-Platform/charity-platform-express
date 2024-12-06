@@ -4,6 +4,7 @@ const Book = require("../models/book.model");
 const factory = require("./handlers.factory");
 const { subscribed } = require("../middlewares/check.subscription");
 const { uploadMixOfImages } = require("../middlewares/imagesAndFilesProcess");
+const { getDecryptData, postPaymentData } = require("../utils/helpers");
 
 exports.uploadBookImgsAndFile = uploadMixOfImages([
   {
@@ -12,6 +13,10 @@ exports.uploadBookImgsAndFile = uploadMixOfImages([
   },
   {
     name: "pdf",
+    maxCount: 1,
+  },
+  {
+    name: "review",
     maxCount: 1,
   },
 ]);
@@ -100,20 +105,27 @@ exports.getAllBooksForMentor = asyncHandler(async (req, res, next) => {
 exports.checksubscribed = subscribed(Book);
 
 exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
   // Retrieve document based on ID from the Book model
-  const document = await Book.findOne({ _id: req.params.id });
+  const document = await Book.findOne({ _id: id });
 
   // Check if the document exists, if not, send a 404 error
   if (!document) {
-    return next(
-      new ApiError(`The document for this id ${req.params.id} not found`, 404)
-    );
+    return next(new ApiError(`The document for this id ${id} not found`, 404));
+  }
+
+  // Check if the user already owns the book
+  const userAlreadyOwnsBook = await Book.findOne({
+    _id: id,
+    paidUsers: req.user._id,
+  });
+  if (userAlreadyOwnsBook) {
+    return next(new ApiError(`You already own this book`, 400));
   }
 
   // Check if the user has already paid for this document when using online payment
-  const paidUsersDocument = await Book.findOne({ _id: req.params.id }).select(
-    "paidUsers"
-  );
+  const paidUsersDocument = await Book.findOne({ _id: id }).select("paidUsers");
   if (
     paidUsersDocument &&
     paidUsersDocument.paidUsers &&
@@ -132,7 +144,7 @@ exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
     responseUrl: `${process.env.responseUrl}/auth/request/payment/book`,
     failureUrl: `${process.env.failureUrl}/auth/request/payment/book`,
     version: "2",
-    orderReferenceNumber: req.params.id,
+    orderReferenceNumber: id,
     currency: "KWD",
     variable3: req.user.id + Date.now(),
     name: req.user.name,
@@ -141,7 +153,10 @@ exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
     saveCard: true,
   };
 
+  console.log(data);
+
   // Call the postPaymentData function and send the response to the client
   const response = await postPaymentData(data);
+  console.log(response);
   res.status(200).json({ status: "success", data: response });
 });

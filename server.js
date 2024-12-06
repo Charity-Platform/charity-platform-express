@@ -3,13 +3,12 @@ const app = express();
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const ApiError = require("./utils/api.error");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const cors = require("cors");
-
 const globalError = require("./middlewares/error.middleware");
 const dbConnection = require("./configs/db.config");
 
-//ROUTES
+// ROUTES
 const authRoutes = require("./routes/auth.routes");
 const FieldRoutes = require("./routes/field.routes");
 const contactUsRoutes = require("./routes/contactUs.routes");
@@ -24,6 +23,7 @@ const postsRoutes = require("./routes/post.routes");
 const jobsRoutes = require("./routes/job.routes");
 const employeeRoutes = require("./routes/employee.routes");
 
+// MIDDLEWARES
 app.use(express.json());
 app.use(cookieParser());
 
@@ -49,7 +49,7 @@ app.use(
   })
 );
 
-//Mount Routes
+// MOUNT ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/fields", FieldRoutes);
 app.use("/api/contact-us", contactUsRoutes);
@@ -63,10 +63,6 @@ app.use("/api/mentors", mentorRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/employee", employeeRoutes);
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
 // Global error handling middleware for express
 app.all("*", (req, res, next) => {

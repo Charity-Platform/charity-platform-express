@@ -95,6 +95,19 @@ exports.saveFilesNameToDB = asyncHandler(async (req, res, next) => {
       req.body.pdf = pdfUrl; // Save the full PDF URL
     }
 
+    if (req.files.review && req.files.review.length > 0) {
+      const fileFileName = `${Date.now()}-${slugify(
+        req.files.review[0].originalname
+      )}`;
+      const pdfUrl = await uploadToS3(
+        req.files.review[0].buffer,
+        fileFileName,
+        "files",
+        "application/pdf"
+      );
+      req.body.review = pdfUrl; // Save the full PDF URL
+    }
+
     next();
   } catch (error) {
     console.error(error);
