@@ -3,6 +3,7 @@ const factory = require("./handlers.factory");
 const ConsultationTicket = require("../models/consultation.model");
 const ApiError = require("../utils/api.error");
 const ConsultationRequest = require("../models/consultaion.payment.record");
+const { postPaymentData } = require("../utils/helpers");
 
 exports.createTicket = asyncHandler(async (req, res) => {
   try {
@@ -147,3 +148,35 @@ exports.getLoggedMentorRequests = asyncHandler(async (req, res, next) => {
 
 exports.deleteConsultRequestById = factory.deleteOne(ConsultationRequest);
 
+exports.consultaionPaymentSession = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Retrieve document based on ID from the Book model
+  const document = await ConsultationTicket.findOne({ _id: id });
+
+  // Check if the document exists, if not, send a 404 error
+  if (!document) {
+    return next(new ApiError(`The document for this id ${id} not found`, 404));
+  }
+
+  // Prepare payment data for postPaymentData function
+  const data = {
+    merchantCode: `${process.env.merchantCode}`,
+    amount: document.price,
+    paymentType: "0",
+    responseUrl: `${process.env.responseUrl}/auth/payment/consultation`,
+    failureUrl: `${process.env.failureUrl}/auth/payment/consultation`,
+    version: "2",
+    orderReferenceNumber: id,
+    currency: "KWD",
+    variable3: req.user.id + Date.now(),
+    name: req.user.name,
+    email: req.user.email,
+    mobile_number: req.user.phone,
+    saveCard: true,
+  };
+
+  // Call the postPaymentData function and send the response to the client
+  const response = await postPaymentData(data);
+  res.status(200).json({ status: "success", data: response });
+});

@@ -41,7 +41,7 @@ router.get("/mentor/:mentor", getAllTicketsForMentor);
 // Get all tickets for logged mentor
 router.get("/my-tickets", protect, getLoggedMentorTickets);
 
-// router.post("/payment/:id", protect, consultaionPaymentSession);
+router.post("/payment/:id", protect, consultaionPaymentSession);
 
 // router.post("/checkout/:id", protect, consultationCheckout);
 
