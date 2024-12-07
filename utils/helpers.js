@@ -40,7 +40,7 @@ const postPaymentData = async (data) => {
   try {
     const encryptedResults = getEncryptedData(data);
     const response = await axios.post(
-      "https://api.hesabe.com/checkout",
+      "https://sandbox.hesabe.com/checkout",
       {
         data: encryptedResults,
       },
@@ -55,7 +55,7 @@ const postPaymentData = async (data) => {
     if (response && response.status === 200) {
       const decryptedResults = getDecryptData(response.data);
       const responseDate = decryptedResults.response.data;
-      const redirectUrl = `https://api.hesabe.com/payment?data=${responseDate}`;
+      return (redirectUrl = `https://sandbox.hesabe.com/payment?data=${responseDate}`);
       return redirectUrl;
     }
   } catch (error) {

@@ -19,8 +19,7 @@ const { checkBookOwner } = require("../middlewares/check.book-owner");
 const { saveFilesNameToDB } = require("../middlewares/imagesAndFilesProcess");
 
 router.post("/payment/:id", protect, bookPaymentSession);
-
-// router.post("/payment/checkout/:id", protect, bookPaymentCheckout);
+router.post("/payment/checkout/:data", protect, bookPaymentCheckout);
 
 router.get("/", getAllBooks);
 router.get("/free", getAllFreeBooks);

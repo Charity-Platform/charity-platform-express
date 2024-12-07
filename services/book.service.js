@@ -5,6 +5,9 @@ const factory = require("./handlers.factory");
 const { subscribed } = require("../middlewares/check.subscription");
 const { uploadMixOfImages } = require("../middlewares/imagesAndFilesProcess");
 const { getDecryptData, postPaymentData } = require("../utils/helpers");
+const Payments = require("../models/paymentRecords");
+const BookRequest = require("../models/bookRequestModel");
+const Mentor = require("../models/mentor.model");
 
 exports.uploadBookImgsAndFile = uploadMixOfImages([
   {
@@ -72,7 +75,7 @@ exports.getAllPaidBooks = asyncHandler(async (req, res, next) => {
 
 exports.getAllBooks = asyncHandler(async (req, res, next) => {
   const document = await Book.find()
-    .select("title image description price owner ")
+    .select("title image description price owner review ")
     .populate({
       path: "owner",
       select: "name",
@@ -125,7 +128,7 @@ exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
   }
 
   // Check if the user has already paid for this document when using online payment
-  const paidUsersDocument = await Book.findOne({ _id: id }).select("paidUsers");
+  const paidUsersDocument = await Book.findOne({ id }).select("paidUsers");
   if (
     paidUsersDocument &&
     paidUsersDocument.paidUsers &&
@@ -153,10 +156,73 @@ exports.bookPaymentSession = asyncHandler(async (req, res, next) => {
     saveCard: true,
   };
 
-  console.log(data);
-
   // Call the postPaymentData function and send the response to the client
   const response = await postPaymentData(data);
-  console.log(response);
   res.status(200).json({ status: "success", data: response });
+});
+
+exports.bookPaymentCheckout = asyncHandler(async (req, res, next) => {
+  const result = getDecryptData(req.params.data);
+  console.log(result.response);
+  if (result.status) {
+    const payment = await Payments.findOne({
+      refId: result.response.variable3,
+    });
+    // if (payment) {
+    //   return next(new ApiError("expired payment token", 401));
+    // }
+    const paymentid = new Payments({
+      refId: result.response.variable3,
+    });
+    await paymentid.save();
+
+    const book = await Book.findByIdAndUpdate(
+      result.response.orderReferenceNumber,
+      {
+        $push: { paidUsers: req.user.id },
+      },
+      { new: true }
+    );
+    //check the payment method
+    let method;
+    if (result.response.method === 0) {
+      method = "Indirect";
+    } else if (result.response.method === 1) {
+      method = "Knet";
+    } else if (result.response.method === 2) {
+      method = "MPGS";
+    }
+    // save the request into DB
+    const bookRequest = new BookRequest({
+      user: req.user,
+      book: result.response.orderReferenceNumber,
+      type: result.response.variable1,
+      amount: result.response.amount,
+      paymentMethod: method,
+      paymentId: result.response.paymentId,
+      paidOn: result.response.paidOn,
+    });
+    await bookRequest.save();
+    // const book = await Book.findByIdAndUpdate(
+    //   response.data.orderReferenceNumber,
+    //   {
+    //     $push: { paidUsers: req.user.id },
+    //   },
+    //   { new: true }
+    // );
+    req.user.books.push(result.response.orderReferenceNumber);
+    await req.user.save();
+    const mentor = await Mentor.findById(book.owner);
+    const { fees } = mentor;
+    let amount = result.response.amount / 100;
+    amount = amount - amount * (fees / 100);
+    await Mentor.findByIdAndUpdate(
+      book.owner,
+      { $inc: { balance: amount } },
+      { new: true }
+    );
+    res.status(201).json({ Message: "book payment success" });
+  } else {
+    return next(new ApiError(`Payment failed`, 400));
+  }
 });
