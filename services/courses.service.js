@@ -6,6 +6,8 @@ const Mentor = require("../models/mentor.model");
 const factory = require("./handlers.factory");
 const CourseRequest = require("../models/courses.payment.records");
 const { subscribed } = require("../middlewares/check.subscription");
+const { postPaymentData, getDecryptData } = require("../utils/helpers");
+const Payments = require("../models/paymentRecords");
 exports.uploadCourseImage = uploadSingleImage("image");
 
 exports.getCourseRequestById = async (req, res, next) => {
@@ -156,3 +158,122 @@ exports.getAllCoursesForMentor = asyncHandler(async (req, res, next) => {
 });
 
 exports.checksubscribed = subscribed(Course);
+
+exports.coursePaymentSession = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Retrieve document based on ID from the Book model
+  const document = await Course.findOne({ _id: id });
+
+  // Check if the document exists, if not, send a 404 error
+  if (!document) {
+    return next(new ApiError(`The document for this id ${id} not found`, 404));
+  }
+
+  // Check if the user already owns the book
+  const userAlreadyOwnsCourse = await Course.findOne({
+    _id: id,
+    paidUsers: req.user._id,
+  });
+  if (userAlreadyOwnsCourse) {
+    return next(new ApiError(`You already own this Course`, 400));
+  }
+
+  // Check if the user has already paid for this document when using online payment
+  // const paidUsersDocument = await Course.findOne({ id }).select("paidUsers");
+  // if (
+  //   paidUsersDocument &&
+  //   paidUsersDocument.paidUsers &&
+  //   paidUsersDocument.paidUsers
+  //     .map((user) => user.toString())
+  //     .includes(req.user.id)
+  // ) {
+  //   return next(new ApiError(`You already own this Course`, 401));
+  // }
+
+  // Prepare payment data for postPaymentData function
+  const data = {
+    merchantCode: `${process.env.merchantCode}`,
+    amount: document.price,
+    paymentType: "0",
+    responseUrl: `${process.env.responseUrl}/auth/payment/course`,
+    failureUrl: `${process.env.failureUrl}/auth/payment/course`,
+    version: "2",
+    orderReferenceNumber: id,
+    currency: "KWD",
+    variable3: req.user.id + Date.now(),
+    name: req.user.name,
+    email: req.user.email,
+    mobile_number: req.user.phone,
+    saveCard: true,
+  };
+
+  // Call the postPaymentData function and send the response to the client
+  const response = await postPaymentData(data);
+  res.status(200).json({ status: "success", data: response });
+});
+
+exports.coursePaymentCheckout = asyncHandler(async (req, res, next) => {
+  const result = getDecryptData(req.params.data);
+  if (result.status) {
+    const payment = await Payments.findOne({
+      refId: result.response.variable3,
+    });
+    // if (payment) {
+    //   return next(new ApiError("expired payment token", 401));
+    // }
+    const paymentid = new Payments({
+      refId: result.response.variable3,
+    });
+    await paymentid.save();
+
+    const course = await Course.findByIdAndUpdate(
+      result.response.orderReferenceNumber,
+      {
+        $push: { paidUsers: req.user.id },
+      },
+      { new: true }
+    );
+    //check the payment method
+    let method;
+    if (result.response.method === 0) {
+      method = "Indirect";
+    } else if (result.response.method === 1) {
+      method = "Knet";
+    } else if (result.response.method === 2) {
+      method = "MPGS";
+    }
+    // save the request into DB
+    // const bookRequest = new BookRequest({
+    //   user: req.user,
+    //   book: result.response.orderReferenceNumber,
+    //   type: result.response.variable1,
+    //   amount: result.response.amount,
+    //   paymentMethod: method,
+    //   paymentId: result.response.paymentId,
+    //   paidOn: result.response.paidOn,
+    // });
+    // await bookRequest.save();
+    // const book = await Book.findByIdAndUpdate(
+    //   response.data.orderReferenceNumber,
+    //   {
+    //     $push: { paidUsers: req.user.id },
+    //   },
+    //   { new: true }
+    // );
+    req.user.courses.push(result.response.orderReferenceNumber);
+    await req.user.save();
+    const mentor = await Mentor.findById(course.owner);
+    const { fees } = mentor;
+    let amount = result.response.amount / 100;
+    amount = amount - amount * (fees / 100);
+    await Mentor.findByIdAndUpdate(
+      course.owner,
+      { $inc: { balance: amount } },
+      { new: true }
+    );
+    res.status(201).json({ Message: "course payment success" });
+  } else {
+    return next(new ApiError(`Payment failed`, 400));
+  }
+});
