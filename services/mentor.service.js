@@ -13,6 +13,10 @@ exports.unActivateMentor = asyncHandler(async (req, res, next) => {
   if (!mentor) {
     return next(new ApiError(`No mentor found for ID ${req.params.id}`, 404));
   }
+
+  if (!req.body.fees) {
+    return next(new ApiError("Fees are required", 400));
+  }
   res.status(200).json({ data: mentor });
 });
 
@@ -137,13 +141,13 @@ exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
 
 exports.acceptDepositRequest = asyncHandler(async (req, res, next) => {
   const depositRequest = await DepositeRequest.findByIdAndUpdate(
-    req.query.id,
+    req.params.id,
     { accepted: true },
     { new: true }
   );
   if (!depositRequest) {
     return next(
-      new ApiError(`No deposit request found for ID ${req.query.id}`, 404)
+      new ApiError(`No deposit request found for ID ${req.params.id}`, 404)
     );
   }
 
@@ -151,6 +155,15 @@ exports.acceptDepositRequest = asyncHandler(async (req, res, next) => {
   if (!mentor) {
     return next(
       new ApiError(`No mentor found for ID ${depositRequest.mentor}`, 404)
+    );
+  }
+
+  if (mentor.balance < depositRequest.equity) {
+    return next(
+      new ApiError(
+        `Insufficient balance in mentor's account, current balance is ${mentor.balance}`,
+        401
+      )
     );
   }
 

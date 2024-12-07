@@ -3,7 +3,9 @@ const factory = require("./handlers.factory");
 const ConsultationTicket = require("../models/consultation.model");
 const ApiError = require("../utils/api.error");
 const ConsultationRequest = require("../models/consultaion.payment.record");
-const { postPaymentData } = require("../utils/helpers");
+const { postPaymentData, getDecryptData } = require("../utils/helpers");
+const Payments = require("../models/paymentRecords");
+const Mentor = require("../models/mentor.model");
 
 exports.createTicket = asyncHandler(async (req, res) => {
   try {
@@ -179,4 +181,67 @@ exports.consultaionPaymentSession = asyncHandler(async (req, res, next) => {
   // Call the postPaymentData function and send the response to the client
   const response = await postPaymentData(data);
   res.status(200).json({ status: "success", data: response });
+});
+
+exports.consultationCheckout = asyncHandler(async (req, res, next) => {
+  const result = getDecryptData(req.params.data);
+  if (result.status) {
+    const payment = await Payments.findOne({
+      refId: result.response.variable3,
+    });
+    // if (payment) {
+    //   return next(new ApiError("expired payment token", 401));
+    // }
+    const paymentid = new Payments({
+      refId: result.response.variable3,
+    });
+    await paymentid.save();
+
+    const ticket = await ConsultationTicket.findByIdAndUpdate(
+      result.response.orderReferenceNumber,
+      { $set: { isActive: false } },
+      { new: true }
+    );
+    //check the payment method
+    let method;
+    if (result.response.method === 0) {
+      method = "Indirect";
+    } else if (result.response.method === 1) {
+      method = "Knet";
+    } else if (result.response.method === 2) {
+      method = "MPGS";
+    }
+    req.user.consultations.push(result.response.orderReferenceNumber);
+    await req.user.save();
+
+    const mentor = await Mentor.findById(ticket.owner);
+    const { fees } = mentor;
+
+    let amount = result.response.amount / 100;
+    amount = amount - amount * (fees / 100);
+
+    await Mentor.findByIdAndUpdate(
+      ticket.owner,
+      { $inc: { balance: amount } },
+      { new: true }
+    );
+    const { response } = result;
+
+    console.log(result);
+
+    const consultRequest = new ConsultationRequest({
+      user: req.user,
+      ticket: response.orderReferenceNumber,
+      mentor: mentor,
+      amount: response.amount / 100,
+      invoice_id: req.params.id,
+      paymentMethod: method,
+      type: response.type,
+      paidOn: Date.now(),
+    });
+    await consultRequest.save();
+    res.status(201).json({ Message: "course payment success" });
+  } else {
+    return next(new ApiError(`Payment failed`, 400));
+  }
 });

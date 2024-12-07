@@ -16,11 +16,6 @@ const {
   getLoggedMentorRequests,
 } = require("../services/tickets.service");
 
-// const {
-//   ticketValidation,
-//   TicketIdValidation,
-// } = require("../utils/validations/ticket.validations");
-
 const { allowedTo, protect } = require("../services/auth.service");
 const { checkTicketOwner } = require("../middlewares/check.ticket.owner");
 
@@ -43,7 +38,7 @@ router.get("/my-tickets", protect, getLoggedMentorTickets);
 
 router.post("/payment/:id", protect, consultaionPaymentSession);
 
-// router.post("/checkout/:id", protect, consultationCheckout);
+router.post("/checkout/:data", protect, consultationCheckout);
 
 router.get("/request/my-requests", protect, getLoggedMentorRequests);
 

@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
-    consultaions: [
+    consultations: [
       { type: mongoose.Schema.Types.ObjectId, ref: "ConsultationTicket" },
     ],
     books: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
