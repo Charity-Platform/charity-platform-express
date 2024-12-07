@@ -8,6 +8,7 @@ const { getDecryptData, postPaymentData } = require("../utils/helpers");
 const Payments = require("../models/paymentRecords");
 const BookRequest = require("../models/bookRequestModel");
 const Mentor = require("../models/mentor.model");
+const { response } = require("express");
 
 exports.uploadBookImgsAndFile = uploadMixOfImages([
   {
@@ -37,6 +38,18 @@ exports.createBook = asyncHandler(async (req, res, next) => {
   } catch (error) {
     next(new ApiError(error.message, 500));
   }
+});
+
+exports.reviewBookById = asyncHandler(async (req, res, next) => {
+  const book = await Book.findById(req.params.id).select(
+    "review title price image description"
+  );
+  if (!book) {
+    return next(
+      new ApiError(`The book with ID ${req.params.id} does not exist`)
+    );
+  }
+  res.status(200).json(book);
 });
 
 exports.updateBook = factory.updateOne(Book);

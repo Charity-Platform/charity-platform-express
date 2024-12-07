@@ -13,6 +13,7 @@ const {
   getAllBooksForMentor,
   getAllFreeBooks,
   getAllPaidBooks,
+  reviewBookById,
 } = require("../services/book.service");
 const { checksubscribed } = require("../services/book.service");
 const { checkBookOwner } = require("../middlewares/check.book-owner");
@@ -22,6 +23,7 @@ router.post("/payment/:id", protect, bookPaymentSession);
 router.post("/checkout/:data", protect, bookPaymentCheckout);
 
 router.get("/", getAllBooks);
+router.get("/review/:id", reviewBookById);
 router.get("/free", getAllFreeBooks);
 router.get("/paid", getAllPaidBooks);
 router.get("/mentor/:mentorID", getAllBooksForMentor);
