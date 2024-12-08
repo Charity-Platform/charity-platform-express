@@ -196,7 +196,7 @@ exports.coursePaymentSession = asyncHandler(async (req, res, next) => {
     merchantCode: `${process.env.merchantCode}`,
     amount: document.price,
     paymentType: "0",
-    responseUrl: `${process.env.responseUrl}/auth/payment/course`,
+    responseUrl: `${process.env.responseUrl}/auth/payment/course?id=${document.id}`,
     failureUrl: `${process.env.failureUrl}/auth/payment/course`,
     version: "2",
     orderReferenceNumber: id,
@@ -243,24 +243,7 @@ exports.coursePaymentCheckout = asyncHandler(async (req, res, next) => {
     } else if (result.response.method === 2) {
       method = "MPGS";
     }
-    // save the request into DB
-    // const bookRequest = new BookRequest({
-    //   user: req.user,
-    //   book: result.response.orderReferenceNumber,
-    //   type: result.response.variable1,
-    //   amount: result.response.amount,
-    //   paymentMethod: method,
-    //   paymentId: result.response.paymentId,
-    //   paidOn: result.response.paidOn,
-    // });
-    // await bookRequest.save();
-    // const book = await Book.findByIdAndUpdate(
-    //   response.data.orderReferenceNumber,
-    //   {
-    //     $push: { paidUsers: req.user.id },
-    //   },
-    //   { new: true }
-    // );
+
     req.user.courses.push(result.response.orderReferenceNumber);
     await req.user.save();
     const mentor = await Mentor.findById(course.owner);
@@ -272,7 +255,10 @@ exports.coursePaymentCheckout = asyncHandler(async (req, res, next) => {
       { $inc: { balance: amount } },
       { new: true }
     );
-    res.status(201).json({ Message: "course payment success" });
+    res.status(201).json({
+      Message: "course payment success",
+      course: orderReferenceNumber,
+    });
   } else {
     return next(new ApiError(`Payment failed`, 400));
   }

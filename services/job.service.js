@@ -29,3 +29,16 @@ exports.getAllNotActiveJobs = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateJob = factory.updateOne(Job);
+
+exports.jobApply = asyncHandler(async (req, res, next) => {
+  try {
+    const job = await Job.findByIdAndUpdate(req.params.id, {
+      $push: { applications: req.body.userId },
+    });
+    if (!job)
+      return next(new ApiError(`The job with ID ${req.params.id} does not exist`, 404));
+    res.status(200).json(job);
+  } catch (error) {
+    next(new ApiError(error.message, 500));
+  }
+});
