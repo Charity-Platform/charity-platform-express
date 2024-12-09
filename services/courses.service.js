@@ -179,25 +179,13 @@ exports.coursePaymentSession = asyncHandler(async (req, res, next) => {
     return next(new ApiError(`You already own this Course`, 400));
   }
 
-  // Check if the user has already paid for this document when using online payment
-  // const paidUsersDocument = await Course.findOne({ id }).select("paidUsers");
-  // if (
-  //   paidUsersDocument &&
-  //   paidUsersDocument.paidUsers &&
-  //   paidUsersDocument.paidUsers
-  //     .map((user) => user.toString())
-  //     .includes(req.user.id)
-  // ) {
-  //   return next(new ApiError(`You already own this Course`, 401));
-  // }
-
   // Prepare payment data for postPaymentData function
   const data = {
     merchantCode: `${process.env.merchantCode}`,
     amount: document.price,
     paymentType: "0",
-    responseUrl: `${process.env.responseUrl}/auth/payment/course?id=${document.id}`,
-    failureUrl: `${process.env.failureUrl}/auth/payment/course`,
+    responseUrl: `${process.env.responseUrl}/auth/payment/course/${document.id}`,
+    failureUrl: `${process.env.failureUrl}/auth/payment/course/${document.id}`,
     version: "2",
     orderReferenceNumber: id,
     currency: "KWD",
