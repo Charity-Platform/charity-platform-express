@@ -4,12 +4,15 @@ const mongoose = require("mongoose");
 const employeeSchema = new Schema({
   name: String,
   address: String,
-  phone: Number,
+  phone: String,
+  email: String,
+  location: String,
   age: Number,
   department: String,
   depDiscription: String,
   image: String,
   pdf: String,
+
   link: {
     type: String,
     default: "",
