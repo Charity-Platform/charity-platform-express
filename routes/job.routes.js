@@ -9,6 +9,9 @@ const {
   getAllActiveJobs,
   getAllNotActiveJobs,
   updateJob,
+  uploadProfileImageAndPdf,
+  jobApply,
+  getAllApplicationsForAjob,
 } = require("../services/job.service");
 
 const { allowedTo, protect } = require("../services/auth.service");
@@ -19,6 +22,10 @@ router.get("/not-active", getAllNotActiveJobs);
 
 // Create a new job
 router.post("/", createJob);
+
+router.post("/apply/:id", uploadProfileImageAndPdf, jobApply);
+
+router.get("/applications/:jobId", getAllApplicationsForAjob);
 
 // Get a job by ID
 router.get("/:id", getJobById);
