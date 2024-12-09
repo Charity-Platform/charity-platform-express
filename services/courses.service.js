@@ -101,7 +101,21 @@ exports.getCourseById = asyncHandler(async (req, res, next) => {
   res.status(200).json(document);
 });
 
-exports.getAllCourses = factory.getAll(Course);
+exports.getAllCourses = asyncHandler(async (req, res, next) => {
+  const document = await Course.find().select(
+    "title image description price body videos answer content auther courseLink field link"
+  );
+  if (!document) next(new ApiError(`Error Happend `, 404));
+  if (document.length === 0) {
+    res.status(200).json({ message: "There Is NO Data To Retrive" });
+  } else {
+    res.status(200).json({
+      message: "Documents retrieved successfully",
+      length: document.length,
+      document,
+    });
+  }
+});
 
 exports.getLoggedMentorCourses = asyncHandler(async (req, res, next) => {
   const course = await Course.find({
