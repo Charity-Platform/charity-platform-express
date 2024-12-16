@@ -221,9 +221,9 @@ exports.coursePaymentCheckout = asyncHandler(async (req, res, next) => {
     const payment = await Payments.findOne({
       refId: result.response.variable3,
     });
-    // if (payment) {
-    //   return next(new ApiError("expired payment token", 401));
-    // }
+    if (payment) {
+      return next(new ApiError("expired payment token", 401));
+    }
     const paymentid = new Payments({
       refId: result.response.variable3,
     });
@@ -259,7 +259,7 @@ exports.coursePaymentCheckout = asyncHandler(async (req, res, next) => {
     );
     res.status(201).json({
       Message: "course payment success",
-      course: orderReferenceNumber,
+      course: result.response.orderReferenceNumber, // Correct reference
     });
   } else {
     return next(new ApiError(`Payment failed`, 400));
