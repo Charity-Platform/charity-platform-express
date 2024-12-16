@@ -42,7 +42,7 @@ exports.createBook = asyncHandler(async (req, res, next) => {
 
 exports.reviewBookById = asyncHandler(async (req, res, next) => {
   const book = await Book.findById(req.params.id).select(
-    "review title price image description"
+    "review title price image description paidUsers"
   );
   if (!book) {
     return next(
