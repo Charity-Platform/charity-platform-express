@@ -127,13 +127,13 @@ exports.getNotAcceptedDepostes = asyncHandler(async (req, res) => {
   res.status(200).json({ data: notAccepted });
 });
 exports.getDeposteRequestByID = asyncHandler(async (req, res, next) => {
-  const deposteRequest = await DepositeRequest.findById(req.query.id).populate({
+  const deposteRequest = await DepositeRequest.findById(req.params.id).populate({
     path: "mentor",
     select: "name email address email phone balance fees socilaMedia ",
   });
   if (!deposteRequest) {
     return next(
-      new ApiError(`No deposteRequest found for ID ${req.query.id}`, 404)
+      new ApiError(`No deposteRequest found for ID ${req.params.id}`, 404)
     );
   }
   res.status(200).json({ data: deposteRequest });
