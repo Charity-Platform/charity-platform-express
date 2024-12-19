@@ -8,7 +8,6 @@ const {
   getAllActiveMentors,
   getAllNotActiveMentors,
   getMentorsByField,
-  getMentorsBySemester,
   depositeRequest,
   getAcceptedDepostes,
   getNotAcceptedDepostes,

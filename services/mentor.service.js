@@ -126,7 +126,7 @@ exports.getNotAcceptedDepostes = asyncHandler(async (req, res) => {
   const notAccepted = await DepositeRequest.find({ accepted: false });
   res.status(200).json({ data: notAccepted });
 });
-exports.getDeposteRequestByID = asyncHandler(async (req, res) => {
+exports.getDeposteRequestByID = asyncHandler(async (req, res, next) => {
   const deposteRequest = await DepositeRequest.findById(req.query.id).populate({
     path: "mentor",
     select: "name email address email phone balance fees socilaMedia ",
