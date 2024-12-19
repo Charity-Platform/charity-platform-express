@@ -34,7 +34,7 @@ exports.getEmployeeRequests = asyncHandler(async (req, res, next) => {
 });
 
 exports.getEmployeeRequestById = asyncHandler(async (req, res, next) => {
-  const document = await EmployeeRequest.find(req.params.id);
+  const document = await EmployeeRequest.findById(req.params.id);
   if (!document) next(new ApiError(`Error Happend `, 404));
   if (document.length === 0) {
     res.status(200).json({ message: "There Is NO Data To Retrive" });
