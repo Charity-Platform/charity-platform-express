@@ -59,6 +59,7 @@ exports.getAllTicketsForField = asyncHandler(async (req, res, next) => {
 exports.getAllTicketsForMentor = asyncHandler(async (req, res, next) => {
   const tickets = await ConsultationTicket.find({
     owner: req.params.mentor,
+    isActive: true,
   });
   if (!tickets) {
     return next(
@@ -142,6 +143,24 @@ exports.getLoggedMentorRequests = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError(
         `The consultaion requests for this mentor ${req.user.id} were not found`
+      )
+    );
+  }
+  res.status(200).json({ length: request.length, data: request });
+});
+
+exports.getRequesByTicketId = asyncHandler(async (req, res, next) => {
+  const request = await ConsultationRequest.find({
+    "user ticket._id": req.params.id,
+  }).populate({
+    path: "user ticket",
+    select:
+      "title name phone email price day field owner price birthdate owner",
+  });
+  if (!request) {
+    return next(
+      new ApiError(
+        `The consultaion requests for this ticket ${req.params.id} were not found`
       )
     );
   }

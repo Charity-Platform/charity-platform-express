@@ -14,6 +14,7 @@ const {
   getAllConsultRequests,
   deleteConsultRequestById,
   getLoggedMentorRequests,
+  getRequesByTicketId,
 } = require("../services/tickets.service");
 
 const { allowedTo, protect } = require("../services/auth.service");
@@ -41,6 +42,7 @@ router.post("/payment/:id", protect, consultaionPaymentSession);
 router.post("/checkout/:data", protect, consultationCheckout);
 
 router.get("/request/my-requests", protect, getLoggedMentorRequests);
+router.get("/request/my-requests/:id", protect, getRequesByTicketId);
 
 router.get("/request", getAllConsultRequests);
 
