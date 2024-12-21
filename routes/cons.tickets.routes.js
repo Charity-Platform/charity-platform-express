@@ -59,7 +59,7 @@ router.get("/:id", getTicketById);
 router.delete(
   "/:id",
   protect,
-  allowedTo("mentor", "manager"),
+  allowedTo("mentor", "admin", "manager"),
   checkTicketOwner,
   deleteTicket
 );
