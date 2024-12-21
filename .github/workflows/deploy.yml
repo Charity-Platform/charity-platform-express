@@ -12,11 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH key
+      - name: Set up SSH key using ssh-agent
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
+
+      - name: Show SSH key fingerprint
+        run: |
+          ssh-keygen -lf ~/.ssh/id_rsa
 
       - name: Test SSH connection
         run: ssh -o StrictHostKeyChecking=no root@92.113.25.221 "echo 'SSH connection successful!'"
