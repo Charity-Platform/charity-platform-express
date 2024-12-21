@@ -49,6 +49,15 @@ app.use(
   })
 );
 
+// Counter variable
+let requestCounter = 0;
+
+// Middleware to increment the counter on each request
+app.use((req, res, next) => {
+  requestCounter++;  // Increment the counter for every request
+  next();
+});
+
 // MOUNT ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/fields", FieldRoutes);
@@ -64,6 +73,11 @@ app.use("/api/posts", postsRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/employee", employeeRoutes);
 
+// New endpoint to get the current counter value
+app.get("/api/counter", (req, res) => {
+  res.json({ count: requestCounter });
+});
+
 // Global error handling middleware for express
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
@@ -72,7 +86,7 @@ app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
-  console.log(`App running running on port ${PORT}`);
+  console.log(`App running on port ${PORT}`);
 });
 
 // Handle rejection outside express
